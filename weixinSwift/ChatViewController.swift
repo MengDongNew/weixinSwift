@@ -8,82 +8,137 @@
 
 import UIKit
 
-class ChatViewController: UITableViewController {
+class ChatViewController: UITableViewController, XxDL {
 
+    @IBOutlet var msgTF: UITextField!
+    
+    //聊天的好友
+    var toBuddyName = ""
+    //聊天消息
+    var msgsList = [WXMessage]()
+    
+    
+    //获取总代理
+    func zdl() -> AppDelegate {
+        return UIApplication.sharedApplication().delegate as AppDelegate
+    }
+
+    //MARK - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //接管消息代理
+        zdl().xxdl = self
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    //MARK: - Response Actions
+    
+    
+    @IBAction func isComposing(sender: UITextField) {
+        //构建XML消息
+        var xmlMsg = DDXMLElement.elementWithName("message") as DDXMLElement
+        
+        //增加属性
+        xmlMsg.addAttributeWithName("to", stringValue: toBuddyName)
+        xmlMsg.addAttributeWithName("from", stringValue: NSUserDefaults.standardUserDefaults().stringForKey("weixinID"))
+        //构建正文
+        var composing = DDXMLElement.elementWithName("composing") as DDXMLElement
+        composing.addAttributeWithName("xmlns", stringValue: "http://jabber.org/protocol/chatstates")
+        //向消息添加子节点
+        xmlMsg.addChild(composing)
+        //总代理发送消息
+        zdl().xs?.sendElement(xmlMsg)
+    }
+    
+    //发送消息
+    @IBAction func sendMsg(sender: UIBarButtonItem) {
+        println("sendMsg.....")
+        //获取聊天信息
+        let chatStr = msgTF.text
+        if !chatStr.isEmpty {
+            //构建XML消息
+            var xmlMsg = DDXMLElement.elementWithName("message") as DDXMLElement
+            
+            //增加属性
+            xmlMsg.addAttributeWithName("type", stringValue: "chat")
+            xmlMsg.addAttributeWithName("to", stringValue: toBuddyName)
+            xmlMsg.addAttributeWithName("from", stringValue: NSUserDefaults.standardUserDefaults().stringForKey("weixinID"))
+            //构建正文
+            var body = DDXMLElement.elementWithName("body") as DDXMLElement
+            body.setStringValue(chatStr)
+            //消息子节点中加入正文
+            xmlMsg.addChild(body)
+            //总代理向通道发送消息
+            zdl().xs?.sendElement(xmlMsg)
+            //清空聊天框
+            msgTF.text = ""
+            //保存自己的消息
+            var msg = WXMessage()
+            msg.isMe = true
+            msg.body = chatStr
+            //加入到聊天框
+            msgsList.append(msg)
+            //刷新表格
+            self.tableView.reloadData()
+        }
+    }
+    
+    //MARK: - Xiao xi Delegate
+    func newMsg(aMsg: WXMessage) {
+        //获取好友名字
+        toBuddyName = aMsg.from
+        //println("newMsg = \(aMsg)")
+        //如果对方正在输入
+        if aMsg.isComposing {
+            self.navigationItem.title = "正在输入..."
+        }
+        //如果消息有正文o
+        if aMsg.body != "" {
+            self.navigationItem.title = toBuddyName
+            //添加数据源
+            msgsList.append(aMsg)
+            //刷新列表
+            self.tableView.reloadData()
+        }
+        
+    }
 
     // MARK: - Table view data source
-
-    override func numberOfSectionsInTableView(tableView: UITableView!) -> Int {
-        // #warning Potentially incomplete method implementation.
-        // Return the number of sections.
-        return 0
+    
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+            return 1
     }
 
-    override func tableView(tableView: UITableView!, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
-        // Return the number of rows in the section.
-        return 0
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        println("msgs.count = \(msgsList.count)")
+        return msgsList.count
     }
-
-    /*
-    override func tableView(tableView: UITableView!, cellForRowAtIndexPath indexPath: NSIndexPath!) -> UITableViewCell! {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as UITableViewCell
-
-        // Configure the cell...
-
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("chatCell", forIndexPath: indexPath) as UITableViewCell
+        let msg = msgsList[indexPath.row]
+        //判断如果是自己发的
+        if msg.isMe {
+            cell.textLabel?.textAlignment = .Right
+            cell.textLabel?.textColor = UIColor.grayColor()
+        } else {
+            //如果不是自己发的
+            cell.textLabel?.textColor = UIColor.orangeColor()
+        }
+        
+        cell.textLabel?.text = msg.body
+        
         return cell
     }
-    */
+    
 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView!, canEditRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
-        // Return NO if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(tableView: UITableView!, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath!) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView!, moveRowAtIndexPath fromIndexPath: NSIndexPath!, toIndexPath: NSIndexPath!) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView!, canMoveRowAtIndexPath indexPath: NSIndexPath!) -> Bool {
-        // Return NO if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
+    //
     /*
     // MARK: - Navigation
 

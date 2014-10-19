@@ -91,6 +91,7 @@
 		1695107A19E41C8500ABEF3C /* weixinSwiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = weixinSwiftTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1695107F19E41C8500ABEF3C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1695108019E41C8500ABEF3C /* weixinSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weixinSwiftTests.swift; sourceTree = "<group>"; };
+		16C05A0919EDFEE40073FEDC /* Test.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Test.playground; sourceTree = "<group>"; };
 		16F2015519E57B4200CDAC19 /* BuddyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BuddyListViewController.swift; sourceTree = "<group>"; };
 		16F2015719E57DC900CDAC19 /* WXMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WXMessage.swift; sourceTree = "<group>"; };
 		16F2015919E6CEFD00CDAC19 /* LoginViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
@@ -246,6 +247,7 @@
 		1695106719E41C8400ABEF3C /* weixinSwift */ = {
 			isa = PBXGroup;
 			children = (
+				16C05A0919EDFEE40073FEDC /* Test.playground */,
 				1695106A19E41C8500ABEF3C /* AppDelegate.swift */,
 				16F2015919E6CEFD00CDAC19 /* LoginViewController.swift */,
 				16F2015B19E6D61C00CDAC19 /* ChatViewController.swift */,

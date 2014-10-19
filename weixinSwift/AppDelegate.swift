@@ -123,7 +123,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, XMPPStreamDelegate {
             //保存密码备用
             pwd = password!
             //进行链接
-            return xs!.connectWithTimeout(5000, error: nil)
+             xs!.connectWithTimeout(5000, error: nil)
         }
         
         return false
